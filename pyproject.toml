@@ -1,0 +1,79 @@
+[project]
+name = "harborlight-tutor"
+version = "0.1.0"
+description = "Synthetic STAT 101 tutor with a RAG evaluation gate built on RAGAS."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Muhammad Mustafa" }]
+keywords = ["rag", "ragas", "llm-evaluation", "edtech"]
+dependencies = [
+    "anthropic>=0.40",
+    "faiss-cpu>=1.8",
+    "langchain-community>=0.3.27,<0.4",
+    "numpy>=2.0",
+    "openai>=1.50",
+    "pgvector>=0.3",
+    "psycopg[binary]>=3.2",
+    "pyyaml>=6",
+    "ragas==0.4.3",
+    "rapidfuzz>=3",
+]
+
+[project.scripts]
+harborlight-ask = "harborlight_tutor.cli:ask_entry"
+harborlight-eval = "harborlight_tutor.cli:eval_entry"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+packages = ["harborlight_tutor"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "faiss",
+    "ragas",
+    "ragas.*",
+    "openai",
+    "openai.*",
+    "anthropic",
+    "anthropic.*",
+    "psycopg",
+    "psycopg.*",
+    "pgvector",
+    "pgvector.*",
+    "yaml",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
