@@ -1,0 +1,39 @@
+name: Live eval
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-key:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.key.outputs.enabled }}
+    steps:
+      - id: key
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "OPENAI_API_KEY secret is not set. Live eval did not run."
+          fi
+
+  live-eval:
+    needs: check-key
+    if: needs.check-key.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --frozen --all-groups
+      - run: uv run harborlight-eval --mode live --variant improved --provider openai
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

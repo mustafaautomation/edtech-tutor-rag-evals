@@ -1,0 +1,6 @@
+top_k: 5
+embedding_dim: 384
+openai_chat_model: gpt-4o-mini
+openai_embedding_model: text-embedding-3-small
+anthropic_model: claude-sonnet-4-5
+judge_model: gpt-4o-mini
